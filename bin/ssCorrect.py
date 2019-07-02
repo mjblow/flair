@@ -357,13 +357,10 @@ def main():
                     #if verbose: tqdm.write("Reference sequence not found in annotations, skipping: %s" % (chrom), file=sys.stderr)
                     continue
             else:
-                with open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom)) as fout:
-                #if chrom not in outDict:
-                    if chrom not in outDict:
-                        readDict[chrom] = os.path.join(tempDir,"%s_temp_reads.bed" % chrom)
-                #    outDict[chrom] = open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom),'w')
-                #print(line.rstrip(),file=outDict[chrom])
-                    print(line.rstrip(),file=fout)
+                if chrom not in outDict:
+                    readDict[chrom] = os.path.join(tempDir,"%s_temp_reads.bed" % chrom)
+                    outDict[chrom] = open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom),'w')
+                print(line.rstrip(),file=outDict[chrom])
 
     cmds = list()
     for chrom in readDict:
