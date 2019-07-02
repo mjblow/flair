@@ -365,7 +365,7 @@ def main():
                 #    outDict[chrom] = open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom),'w')
                 #print(line.rstrip(),file=outDict[chrom])
                     print(line.rstrip(),file=fout)
-
+                    print(line.rstrip(),readDict[chrom])
 
     cmds = list()
     for chrom in readDict:
