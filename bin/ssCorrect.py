@@ -24,6 +24,7 @@ import subprocess
 import shutil
 import uuid
 import pybedtools
+import pysam
 
 scriptPath = os.path.realpath(__file__)
 path = "/".join(scriptPath.split("/")[:-1])
@@ -346,26 +347,26 @@ def main():
     sortedData = None
     skippedChroms = set()
     readDict = dict()
-    with open(bed) as lines:
-        outDict = dict()
-        for line in tqdm(lines, desc="Step 4/5: Preparing reads for correction", dynamic_ncols=True, position=1) if verbose else lines:
-            cols  = line.rstrip().split()
-            chrom = cols[0]
-            if chrom not in chromosomes:
-                if chrom not in skippedChroms:
-                    skippedChroms.add(chrom)
-                    #if verbose: tqdm.write("Reference sequence not found in annotations, skipping: %s" % (chrom), file=sys.stderr)
-                    continue
-            else:
-                if chrom not in outDict:
-                        readDict[chrom] = os.path.join(tempDir,"%s_temp_reads.bed" % chrom)
-                with open(readDict[chrom],"a+") as fout:
-                #if chrom not in outDict:
-                    
-                #    outDict[chrom] = open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom),'w')
-                #print(line.rstrip(),file=outDict[chrom])
-                    print(line.rstrip(),file=fout)
 
+    readsBT = pybedtools.BedTool(bed)
+    readsBT = readsBT.sort()
+
+    prevChrom = None
+    for line in tqdm(readsBT, desc="Step 4/5: Preparing reads for correction", dynamic_ncols=True, position=1) if verbose else readsBT:
+        cols = line
+        chrom = cols[0]
+        if chrom not in chromosomes:
+            if chrom not in skippedChroms:
+                skippedChroms.add(chrom)
+                #if verbose: tqdm.write("Reference sequence not found in annotations, skipping: %s" % (chrom), file=sys.stderr)
+                continue
+        else:
+            readDict[chrom] = os.path.join(tempDir,"%s_temp_reads.bed" % chrom)
+            if chrom != prevChrom:
+                fout = open(os.path.join(tempDir,"%s_temp_reads.bed" % chrom),"w+")
+            
+            print(line.rstrip(),file=fout)
+            prevChrom = chrom
 
     cmds = list()
     for chrom in readDict:
