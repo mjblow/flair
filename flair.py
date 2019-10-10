@@ -58,9 +58,10 @@ if mode == 'align':
 			args.m += '/minimap2'
 
 	try:
-		if args.n and subprocess.call([args.m, '-ax', 'splice', '-uf', '-k14', '-t', args.t, \
+		if args.n:
+			if subprocess.call([args.m, '-ax', 'splice', '-uf', '-k14', '-t', args.t, \
 			'--secondary=no', args.g, args.r], stdout=open(args.o+'.sam', 'w')):
-			sys.exit(1)
+				sys.exit(1)
 		elif subprocess.call([args.m, '-ax', 'splice', '-t', args.t, '--secondary=no', args.g, args.r], \
 				stdout=open(args.o+'.sam', 'w')):
 			sys.exit(1)
